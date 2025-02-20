@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ProductSkeleton from "../components/ui/ProductSkeleton";
 import ProductPageSkeleton from "../components/ProductPageSkeleton";
+import SuccessPopup from "../components/ui/SuccessPopup";
 
 const ProductPage = () => {
   const { products, addToCart } = useContext(AppContext);
@@ -13,6 +14,7 @@ const ProductPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [successOpen, setSuccesOpen] = useState(false)
 
   async function fetchProducts() {
     try{
@@ -35,6 +37,14 @@ const ProductPage = () => {
     }
   }
 
+  function openSuccess(){
+    setSuccesOpen(true)
+
+    setTimeout(() => {
+      setSuccesOpen(false)
+    }, 1000)
+  }
+
   useEffect(() => {
     setLoading(true)
     window.scrollTo(0, 0);
@@ -43,6 +53,7 @@ const ProductPage = () => {
 
   return (
     <main className="products__main">
+      <SuccessPopup successOpen={successOpen}/>
       <div className="container">
         <div className="row product-page__row">
           {loading ? (
@@ -59,12 +70,13 @@ const ProductPage = () => {
                     />
                   </figure>
                   <div className="selected-product__img__options">
-                    {selectedProduct?.images.map((image) => (
+                    {selectedProduct?.images.map((image, index) => (
                       <img
                         src={`https://ecommerce-samurai.up.railway.app/${image}`}
                         alt=""
                         onClick={() => setSelectedImage(image)}
                         className="selected-product__img__option"
+                        key={index}
                       />
                     ))}
                   </div>
@@ -108,7 +120,9 @@ const ProductPage = () => {
                     </span>
                   </div>
                   <button className="selected-product__add"
-                  onClick={() => addToCart(selectedProduct, quantity)}
+                  onClick={() => {addToCart(selectedProduct, quantity)
+                    openSuccess()
+                  }}
                   >Add To Cart</button>
                 </div>
               </div>
@@ -135,7 +149,7 @@ const ProductPage = () => {
           <div className="recommendations">
             <h2 className="products__title">Trending Now</h2>
             <div className="products__list">
-              {products.length > 0
+              {products.length > 0 && loading !== true
                 ? products
                 .filter(product => product.id !== selectedProduct.id)
                     .slice(0, 4)
