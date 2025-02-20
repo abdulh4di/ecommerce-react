@@ -7,35 +7,53 @@ import ProductSkeleton from "../components/ui/ProductSkeleton";
 import ProductPageSkeleton from "../components/ProductPageSkeleton";
 
 const ProductPage = () => {
-  const { products } = useContext(AppContext);
+  const { products, addToCart } = useContext(AppContext);
   const { id } = useParams();
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   async function fetchProducts() {
-    const { data } = await axios.get(
-      `https://ecommerce-samurai.up.railway.app/product/${id}`
-    );
+    try{
 
-    const productData = data.data;
+      const { data } = await axios.get(
+        `https://ecommerce-samurai.up.railway.app/product/${id}`
+      );
+  
+      const productData = data.data;
+  
+      setSelectedProduct(productData);
+  
+      setSelectedImage(productData.images[0]);
 
-    setSelectedProduct(productData);
+      setLoading(false)
+    }
+
+    catch(error) {
+      alert(error)
+    }
   }
 
   useEffect(() => {
+    setLoading(true)
+    window.scrollTo(0, 0);
     fetchProducts();
-  }, []);
+  }, [id]);
 
   return (
     <main className="products__main">
       <div className="container">
         <div className="row product-page__row">
-          {selectedProduct ? (
+          {loading ? (
+            <ProductPageSkeleton />
+          ) : (
             <>
               <div className="selected-product">
                 <div className="selected-product__left">
                   <figure className="selected-product__img__wrapper">
                     <img
-                      src={`https://ecommerce-samurai.up.railway.app/${selectedProduct?.images[0]}`}
+                      src={`https://ecommerce-samurai.up.railway.app/${selectedImage}`}
                       alt=""
                       className="selected-product__img"
                     />
@@ -45,6 +63,7 @@ const ProductPage = () => {
                       <img
                         src={`https://ecommerce-samurai.up.railway.app/${image}`}
                         alt=""
+                        onClick={() => setSelectedImage(image)}
                         className="selected-product__img__option"
                       />
                     ))}
@@ -62,21 +81,35 @@ const ProductPage = () => {
                       Quantity
                     </span>
                     <div className="selected-product__quantity__wrapper">
-                      <button className="selected-product__quantity__btn">
+                      <button
+                        className="selected-product__quantity__btn"
+                        onClick={() =>
+                          setQuantity((prevQuantity) =>
+                            prevQuantity > 1 ? prevQuantity - 1 : prevQuantity
+                          )
+                        }
+                      >
                         -
                       </button>
                       <div className="selected-product__quantity__amount">
-                        1
+                        {quantity}
                       </div>
-                      <button className="selected-product__quantity__btn">
+                      <button
+                        className="selected-product__quantity__btn"
+                        onClick={() =>
+                          setQuantity((prevQuantity) => prevQuantity + 1)
+                        }
+                      >
                         +
                       </button>
                     </div>
                     <span className="selected-product__quantity__span selected-product__quantity__span-2">
-                      £{selectedProduct?.price}
+                      £{selectedProduct?.price * quantity}
                     </span>
                   </div>
-                  <button className="selected-product__add">Add To Cart</button>
+                  <button className="selected-product__add"
+                  onClick={() => addToCart(selectedProduct, quantity)}
+                  >Add To Cart</button>
                 </div>
               </div>
               <div className="specifications">
@@ -98,14 +131,13 @@ const ProductPage = () => {
                 </div>
               </div>
             </>
-          ) : (
-            <ProductPageSkeleton />
           )}
           <div className="recommendations">
-            <h2 className="products__title">Tredning Now</h2>
+            <h2 className="products__title">Trending Now</h2>
             <div className="products__list">
-              {products.length > 0 
+              {products.length > 0
                 ? products
+                .filter(product => product.id !== selectedProduct.id)
                     .slice(0, 4)
                     .map((product) => (
                       <Product product={product} key={product.id} />

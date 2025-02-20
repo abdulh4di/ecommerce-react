@@ -11,6 +11,15 @@ import ProductPage from "./pages/ProductPage";
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([])
+
+  function addToCart(product, addedQuantity){
+    setCart([{...product, quantity: addedQuantity}])
+  }
+
+  useEffect(() => {
+    console.log(cart)
+  }, [cart])
 
   async function fetchProducts() {
     const { data } = await axios.get(
@@ -27,7 +36,7 @@ function App() {
   }, []);
 
   return (
-    <AppContext.Provider value={{ products }}>
+    <AppContext.Provider value={{ products, addToCart }}>
       <Router>
         <Nav />
         <Routes>
