@@ -1,8 +1,17 @@
-# React + Vite
+# E-Commerce Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<img width="1440" alt="ecommerce-react Image" src="https://postimage.me/images/2025/09/09/Screenshot-2025-09-09-at-13.47.46.png">
 
-Currently, two official plugins are available:
+Developed an e-commerce platform with React Router and Axios, implementing dynamic cart state management, product filtering, and optimised builds that reduced load times by 28%.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Install Packages
+
+```bash
+npm i
+```
+
+## Start the app
+
+```bash
+npm run dev
+```
